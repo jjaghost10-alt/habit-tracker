@@ -1,0 +1,114 @@
+{% extends "habits/base.html" %}
+
+{% block title %}To-Do List{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- ======================================================
+         Intro / Description box (same style as Habits page)
+         ====================================================== -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body">
+            <h4 class="fw-semibold mb-2">
+                Stay organized and focused 📝
+            </h4>
+            <p class="text-muted mb-0">
+                Capture your tasks, mark them as done, and keep track of what
+                matters most — one step at a time.
+            </p>
+        </div>
+    </div>
+
+    <!-- ======================================================
+         Page header
+         ====================================================== -->
+    <div class="mb-3">
+        <h1 class="fw-bold mb-0">To-Do List</h1>
+    </div>
+
+    <!-- ======================================================
+         Add new task form
+         ====================================================== -->
+    <form method="post" action="{% url 'add_todo' %}" class="d-flex gap-2 mb-4">
+        {% csrf_token %}
+        <input
+            type="text"
+            name="title"
+            class="form-control"
+            placeholder="Add a new task..."
+            required
+        >
+        <button class="btn btn-primary rounded-pill px-4">
+            Add
+        </button>
+    </form>
+
+    <!-- ======================================================
+         To-do items list
+         ====================================================== -->
+    <div class="vstack gap-2">
+
+        {% for todo in todos %}
+        <div class="card shadow-sm border-0 rounded-4
+            {% if todo.is_done %}
+                bg-secondary-subtle
+            {% else %}
+                bg-warning-subtle
+            {% endif %}
+        ">
+
+            <div class="card-body d-flex justify-content-between align-items-center">
+
+                <!-- Task title -->
+                <div class="
+                    {% if todo.is_done %}
+                        text-muted text-decoration-line-through fw-medium
+                    {% else %}
+                        fw-medium
+                    {% endif %}
+                ">
+                    {{ todo.title }}
+                </div>
+
+                <!-- Action buttons -->
+                <div class="d-flex gap-2">
+
+                    <!-- Toggle done / undo -->
+                    <form method="post" action="{% url 'toggle_todo' todo.id %}">
+                        {% csrf_token %}
+                        <button class="btn btn-outline-secondary rounded-pill">
+                            {% if todo.is_done %}
+                                Undo
+                            {% else %}
+                                Done
+                            {% endif %}
+                        </button>
+                    </form>
+
+                    <!-- Delete task -->
+                    <form method="post" action="{% url 'delete_todo' todo.id %}">
+                        {% csrf_token %}
+                        <button
+                            class="btn btn-outline-danger rounded-pill"
+                            title="Delete task"
+                        >
+                            🗑️
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        {% empty %}
+        <div class="text-muted">
+            No tasks yet. Add one above to get started.
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+{% endblock %}

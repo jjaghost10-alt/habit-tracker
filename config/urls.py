@@ -5,4 +5,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("habits.urls")),
     path("streaks/", include("streaks.urls")),# neu hinzugefügt von David
+    path("todos/", include("todos.urls")),   # neu hinzugefügt von David
 ]
