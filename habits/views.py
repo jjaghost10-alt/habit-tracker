@@ -77,3 +77,12 @@ def add_habit(request):
     if name:
         Habit.objects.create(name=name)
     return redirect("dashboard")
+
+@require_POST
+def delete_habit(request, habit_id):
+    """
+    Deletes a habit and all related data (check-ins, streaks). Added by David.
+    """
+    habit = get_object_or_404(Habit, id=habit_id)
+    habit.delete()
+    return redirect("dashboard")
