@@ -1,4 +1,5 @@
 {% extends "habits/base.html" %}
+{% load dict_extras %}
 
 {% block title %}Dashboard{% endblock %}
 
@@ -11,11 +12,9 @@
          ====================================================== -->
     <div class="card shadow-sm border-0 rounded-4 mb-4">
         <div class="card-body">
-
             <h4 class="fw-semibold mb-2">
                 Hello and welcome 👋
             </h4>
-
             <p class="text-muted mb-0">
                 This is a lightweight lifestyle and productivity platform built by
                 <strong>Iri</strong>, <strong>Janosch</strong>, and <strong>Dave</strong>.
@@ -23,14 +22,13 @@
                 Track your habits, build consistency, and focus on what truly matters –
                 one day at a time.
             </p>
-
         </div>
     </div>
 
     <!-- ======================================================
-         Page header: Date
+         Page header
          ====================================================== -->
-    <div class="mb-4">
+    <div class="mb-3">
         <h1 class="fw-bold mb-1">My Habits</h1>
         <p class="text-muted mb-0">
             {{ weekday }}, {{ today|date:"d M Y" }}
@@ -38,11 +36,32 @@
     </div>
 
     <!-- ======================================================
-         Two-column layout
+         Add new habit
+         ====================================================== -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body">
+            <form method="post" action="{% url 'add_habit' %}" class="d-flex gap-2">
+                {% csrf_token %}
+                <input
+                    type="text"
+                    name="name"
+                    class="form-control"
+                    placeholder="Add a new habit..."
+                    required
+                >
+                <button class="btn btn-primary rounded-pill">
+                    Add
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ======================================================
+         Two-column layout: Open / Completed
          ====================================================== -->
     <div class="row g-4">
 
-        <!-- LEFT COLUMN: Open habits -->
+        <!-- OPEN HABITS -->
         <div class="col-md-6">
             <h5 class="text-muted mb-3">Open</h5>
 
@@ -62,13 +81,28 @@
                             {% endif %}
                         </div>
 
-                        <form method="post" action="{% url 'toggle_habit' habit.id %}">
-                            {% csrf_token %}
-                            <button class="btn btn-outline-success rounded-pill">
-                                Mark done
-                            </button>
-                        </form>
+                        <div class="d-flex gap-2 align-items-center">
 
+                            <!-- Toggle -->
+                            <form method="post" action="{% url 'toggle_habit' habit.id %}">
+                                {% csrf_token %}
+                                <button class="btn btn-outline-success rounded-pill">
+                                    Mark done
+                                </button>
+                            </form>
+
+                            <!-- Delete -->
+                            <form method="post" action="{% url 'delete_habit' habit.id %}">
+                                {% csrf_token %}
+                                <button
+                                    class="btn btn-link text-danger fs-5 text-decoration-none"
+                                    title="Delete habit"
+                                >
+                                    🗑️
+                                </button>
+                            </form>
+
+                        </div>
                     </div>
                 </div>
                 {% endif %}
@@ -77,7 +111,7 @@
             {% endfor %}
         </div>
 
-        <!-- RIGHT COLUMN: Completed habits -->
+        <!-- COMPLETED HABITS -->
         <div class="col-md-6">
             <h5 class="text-muted mb-3">Completed</h5>
 
@@ -97,13 +131,28 @@
                             {% endif %}
                         </div>
 
-                        <form method="post" action="{% url 'toggle_habit' habit.id %}">
-                            {% csrf_token %}
-                            <button class="btn btn-success rounded-pill">
-                                ✔ Done
-                            </button>
-                        </form>
+                        <div class="d-flex gap-2 align-items-center">
 
+                            <!-- Toggle -->
+                            <form method="post" action="{% url 'toggle_habit' habit.id %}">
+                                {% csrf_token %}
+                                <button class="btn btn-success rounded-pill">
+                                    ✔ Done
+                                </button>
+                            </form>
+
+                            <!-- Delete -->
+                            <form method="post" action="{% url 'delete_habit' habit.id %}">
+                                {% csrf_token %}
+                                <button
+                                    class="btn btn-link text-danger fs-5 text-decoration-none"
+                                    title="Delete habit"
+                                >
+                                    🗑️
+                                </button>
+                            </form>
+
+                        </div>
                     </div>
                 </div>
                 {% endif %}
@@ -113,6 +162,78 @@
         </div>
 
     </div>
+
+    <!-- ======================================================
+         Weekly habit overview (UX-optimized matrix)
+         ====================================================== -->
+    <div class="card shadow-sm border-0 rounded-4 mt-5">
+        <div class="card-body">
+
+            <h5 class="fw-semibold mb-1">
+                Weekly Overview
+            </h5>
+
+            <p class="text-muted small mb-4">
+                Track your habit consistency over the last 7 days.
+                Each circle represents one completed day.
+            </p>
+
+            <div class="table-responsive">
+                <table class="table table-borderless table-sm align-middle text-center mb-0">
+
+                    <thead>
+                        <tr class="text-muted small">
+                            <th class="text-start">Habit</th>
+
+                            {% for day in week_days %}
+                                <th>
+                                    <div class="fw-semibold">{{ day|date:"D" }}</div>
+                                    <div class="text-muted small">{{ day|date:"d.m" }}</div>
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for habit in habits %}
+                        <tr class="border-top">
+
+                            <td class="text-start fw-semibold py-3">
+                                {{ habit.name }}
+                            </td>
+
+                            {% for day in week_days %}
+                                {% get_weekly_status weekly_checkin_map habit.id day as status %}
+
+                                {% if day == today %}
+                                    <td class="bg-light rounded">
+                                {% else %}
+                                    <td>
+                                {% endif %}
+
+                                    <input
+                                        type="checkbox"
+                                        class="form-check-input rounded-circle"
+                                        {% if status %}checked{% endif %}
+                                        disabled
+                                    >
+
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
+            <p class="text-muted small mt-4 mb-0">
+                Focus on consistency, not perfection.
+            </p>
+
+        </div>
+    </div>
+
 </div>
 
 {% endblock %}

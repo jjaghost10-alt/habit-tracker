@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 
-from datetime import date
+from datetime import date, timedelta
 import calendar
 
 from streaks.models import Streak
@@ -14,6 +14,10 @@ def dashboard(request):
     Splits habits into 'open' and 'completed today' based on check-ins.
     Also provides today's date and weekday for the UI header.
     """
+
+    # --------------------------------------------------
+    # Existing logic (UNCHANGED)
+    # --------------------------------------------------
 
     # Fetch all habits
     habits = Habit.objects.all()
@@ -44,7 +48,31 @@ def dashboard(request):
             checkin.date.day for checkin in checkins
         }
 
+    # --------------------------------------------------
+    # NEW: Weekly habit matrix (last 7 days)
+    # --------------------------------------------------
+    # Generates a list of the last 7 days (chronological order)
+    # Used for the checkbox matrix in the dashboard UI
+    week_days = [
+        today - timedelta(days=i)
+        for i in range(6, -1, -1)
+    ]
+
+    # Fetch all check-ins for the displayed week
+    weekly_checkins = HabitCheckIn.objects.filter(
+        date__in=week_days
+    )
+
+    # Map (habit_id, date) -> True
+    # Enables O(1) lookup in the template
+    weekly_checkin_map = {
+        (checkin.habit_id, checkin.date): True
+        for checkin in weekly_checkins
+    }
+
+    # --------------------------------------------------
     # Context passed to the template
+    # --------------------------------------------------
     context = {
         "habits": habits,
         "completed_today": completed_today,
@@ -56,6 +84,10 @@ def dashboard(request):
         # Calendar data (currently unused in dashboard.html)
         "days_in_month": range(1, days_in_month + 1),
         "habit_calendar": habit_calendar,
+
+        # Weekly matrix data (NEW)
+        "week_days": week_days,
+        "weekly_checkin_map": weekly_checkin_map,
     }
 
     return render(
