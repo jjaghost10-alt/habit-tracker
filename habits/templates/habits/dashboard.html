@@ -92,10 +92,15 @@
                             </form>
 
                             <!-- Delete -->
-                            <form method="post" action="{% url 'delete_habit' habit.id %}">
+                            <form 
+                                 method="post" 
+                                 action="{% url 'delete_habit' habit.id %}"
+                                 onsubmit="return confirm('Are you sure you want to delete this habit?\nThis will permanently remove your streaks.')"
+                            >
+                            
                                 {% csrf_token %}
                                 <button
-                                    class="btn btn-link text-danger fs-5 text-decoration-none"
+                                    class="btn btn-outline-danger rounded-pill"
                                     title="Delete habit"
                                 >
                                     🗑️
@@ -142,10 +147,15 @@
                             </form>
 
                             <!-- Delete -->
-                            <form method="post" action="{% url 'delete_habit' habit.id %}">
+                           <form 
+                                 method="post" 
+                                 action="{% url 'delete_habit' habit.id %}"
+                                 onsubmit="return confirm('Are you sure you want to delete this habit?\nThis will permanently remove your streaks.')"
+                            >
+                            
                                 {% csrf_token %}
                                 <button
-                                    class="btn btn-link text-danger fs-5 text-decoration-none"
+                                    class="btn btn-outline-danger rounded-pill"
                                     title="Delete habit"
                                 >
                                     🗑️

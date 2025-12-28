@@ -70,6 +70,12 @@
                     {% endif %}
                 ">
                     {{ todo.title }}
+
+                    {% if todo.is_done %}
+                        <span class="badge bg-secondary-subtle text-secondary ms-2">
+                            Completed
+                        </span>
+                    {% endif %}
                 </div>
 
                 <!-- Action buttons -->

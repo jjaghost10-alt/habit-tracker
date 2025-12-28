@@ -5,7 +5,7 @@ from .models import Todo
 
 
 def todo_list(request):
-    todos = Todo.objects.order_by("-created_at")
+    todos = Todo.objects.order_by("is_done", "-created_at")
     return render(request, "todos/todo_list.html", {"todos": todos})
 
 
