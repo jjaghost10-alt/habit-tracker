@@ -3,10 +3,12 @@ from django.shortcuts import render
 def books(request):
     return render(request, "books/books.html")
 
-from django.http import HttpResponse
+from django.shortcuts import render
+from .models import Book
 
 def books(request):
-    return HttpResponse("Books page works ✅")
+    all_books = Book.objects.all()
+    return render(request, "books/books.html", {"books": all_books})
 
 def library(request):
     return HttpResponse("Library page works ✅")
