@@ -1,0 +1,16 @@
+<h1>Books</h1>
+
+{% if books %}
+  <ul>
+    {% for b in books %}
+      <li>
+        <strong>{{ b.title }}</strong>
+        {% if b.author %} — {{ b.author }}{% endif %}
+        <br>
+        <small>{{ b.description }}</small>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No books yet. Add some in /admin.</p>
+{% endif %}

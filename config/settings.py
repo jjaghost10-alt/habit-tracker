@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'habits',    # neu hinzugefügt von Janosch
     'streaks',   # neu hinzugefügt von David
     'todos',     # neu hinzugefügt von David
+    'books',     # neu hinzugefügt von Iri
 ]
 
 MIDDLEWARE = [
