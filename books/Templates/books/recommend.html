@@ -1,0 +1,143 @@
+{% extends "habits/base.html" %}
+{% block content %}
+
+<div class="container py-4">
+
+  <!-- Page header -->
+  <div class="mb-4">
+    <h1 class="fw-bold mb-1">📚 Book Recommendations</h1>
+    <p class="text-muted mb-0">
+      Tell us your mood and goal — we’ll pick a great match for your next reading session.
+    </p>
+  </div>
+
+  <!-- Filter / Recommend form -->
+  <div class="card shadow-sm border-0 rounded-4 mb-4">
+    <div class="card-body">
+      <form method="get" class="row g-3 align-items-end">
+        <div class="col-12 col-md-3">
+          <label class="form-label text-muted">Mood ✨</label>
+          <select name="mood" class="form-select">
+            <option value="">Any</option>
+            {% for value, label in moods %}
+              <option value="{{ value }}" {% if request.GET.mood == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-12 col-md-3">
+          <label class="form-label text-muted">Goal 🎯</label>
+          <select name="goal" class="form-select">
+            <option value="">Any</option>
+            {% for value, label in goals %}
+              <option value="{{ value }}" {% if request.GET.goal == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-12 col-md-3">
+          <label class="form-label text-muted">Minutes / session ⏱️</label>
+          <input
+            type="number"
+            name="minutes"
+            min="1"
+            class="form-control"
+            placeholder="e.g., 10"
+            value="{{ request.GET.minutes }}"
+          />
+          <div class="form-text">We’ll match your time budget.</div>
+        </div>
+
+        <div class="col-12 col-md-3 d-flex gap-2">
+          <button class="btn btn-primary rounded-pill w-100" type="submit">Recommend ✨</button>
+          <a class="btn btn-outline-secondary rounded-pill w-100" href="{% url 'books' %}">Reset</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {% if recommended %}
+  <!-- Top Pick -->
+  <div class="card shadow-sm border-0 rounded-4 mb-4">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start gap-3">
+        <div>
+          <div class="text-muted small mb-1">🌟 Top Pick</div>
+          <h3 class="fw-bold mb-1">{{ recommended.title }}</h3>
+          <div class="text-muted mb-3">{{ recommended.author }}</div>
+        </div>
+        {% if recommended.minutes_per_day %}
+          <span class="badge text-bg-light border">⏱️ {{ recommended.minutes_per_day }} min</span>
+        {% endif %}
+      </div>
+
+      <p class="mb-3">{{ recommended.description }}</p>
+
+      <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-outline-primary rounded-pill"
+           href="{% url 'book_detail' recommended.id %}">
+          Open 📖
+        </a>
+
+        <form method="post"
+              action="{% url 'add_to_library' recommended.id %}"
+              class="d-inline">
+          {% csrf_token %}
+          <button type="submit"
+                  class="btn btn-outline-primary rounded-pill">
+            ➕ Save
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% if results %}
+  <!-- More matches -->
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h5 class="fw-semibold mb-0">More matches 💡</h5>
+    <div class="text-muted small">{{ results|length }} found</div>
+  </div>
+
+  <div class="row g-3">
+    {% for book in results %}
+      <div class="col-12 col-lg-6">
+        <div class="card shadow-sm border-0 rounded-4 h-100">
+          <div class="card-body d-flex flex-column">
+            <h5 class="fw-bold mb-1">{{ book.title }}</h5>
+            <div class="text-muted mb-2">{{ book.author }}</div>
+
+            <p class="text-muted mb-3">{{ book.description }}</p>
+
+            <div class="mt-auto d-flex flex-wrap gap-2">
+              <a class="btn btn-outline-primary rounded-pill"
+                 href="{% url 'book_detail' book.id %}">
+                Open 📖
+              </a>
+
+              <form method="post"
+                    action="{% url 'add_to_library' book.id %}"
+                    class="d-inline">
+                {% csrf_token %}
+                <button class="btn btn-outline-success rounded-pill"
+                        type="submit">
+                  Save ➕
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+{% else %}
+  {% if request.GET.mood or request.GET.goal or request.GET.minutes %}
+    <div class="text-muted">No matches found — try relaxing your filters 🙂</div>
+  {% endif %}
+{% endif %}
+</div>
+
+{% endblock %}
+

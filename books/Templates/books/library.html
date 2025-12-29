@@ -1,0 +1,77 @@
+{% extends "habits/base.html" %}
+{% block content %}
+
+<div class="container py-4">
+
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+    <div>
+      <h1 class="mb-1">📚 My Library</h1>
+      <p class="text-muted mb-0">Track your reading, update progress, and keep your notes in one place.</p>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary rounded-pill" href="{% url 'books' %}">← Back to recommendations</a>
+    </div>
+  </div>
+
+  {% if user_books %}
+    <div class="row g-3">
+      {% for ub in user_books %}
+        <div class="col-12 col-lg-6">
+          <div class="card shadow-sm border-0 rounded-4 h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start gap-3">
+                <div>
+                  <div class="fw-semibold fs-5">{{ ub.book.title }}</div>
+                  <div class="text-muted">{{ ub.book.author }}</div>
+                </div>
+
+                <span class="badge rounded-pill text-bg-light border">
+                  {% if ub.status == "want" %}📌 Want to read{% elif ub.status == "reading" %}📖 Reading{% else %}✅ Done{% endif %}
+                </span>
+              </div>
+
+              <div class="mt-3">
+                <div class="d-flex justify-content-between small text-muted mb-1">
+                  <span>Progress</span>
+                  <span>{{ ub.progress }}%</span>
+                </div>
+                <div class="progress" role="progressbar" aria-valuenow="{{ ub.progress }}" aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-bar" style="width: {{ ub.progress }}%"></div>
+                </div>
+              </div>
+
+              <div class="mt-3 d-flex flex-wrap gap-2">
+                <a class="btn btn-primary rounded-pill" href="{% url 'book_detail' ub.book.id %}">✨ Open</a>
+                <a class="btn btn-outline-primary rounded-pill" href="{% url 'update_userbook' ub.book.id %}">📝 Edit / Notes</a>
+              </div>
+
+              {% if ub.rating %}
+                <div class="mt-3 small">
+                  ⭐ Rating: <span class="fw-semibold">{{ ub.rating }}/5</span>
+                </div>
+              {% endif %}
+
+              {% if ub.notes %}
+                <div class="mt-2 small text-muted">
+                  <span class="fw-semibold">Notes:</span>
+                  {{ ub.notes|truncatechars:120 }}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card shadow-sm border-0 rounded-4">
+      <div class="card-body">
+        <div class="fw-semibold mb-1">📚 Your library is empty</div>
+        <div class="text-muted mb-3">Find a book that fits your mood and save it to start tracking.</div>
+        <a class="btn btn-primary rounded-pill" href="{% url 'books' %}">Find a recommendation ✨</a>
+      </div>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

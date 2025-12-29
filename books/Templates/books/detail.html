@@ -1,0 +1,120 @@
+{% extends "habits/base.html" %}
+{% block content %}
+
+<div class="container py-4">
+
+  <!-- Header -->
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+      <div class="text-muted small mb-1">📖 Book</div>
+      <h1 class="fw-bold mb-1">{{ book.title }}</h1>
+      <div class="text-muted">{{ book.author }}</div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary rounded-pill" href="{% url 'books_library' %}">
+        📚 My library
+      </a>
+      <a class="btn btn-outline-primary rounded-pill" href="{% url 'books' %}">
+        ✨ Recommendations
+      </a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- Left: Book summary -->
+    <div class="col-12 col-lg-5">
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+          <h5 class="fw-semibold mb-2">About</h5>
+          <p class="text-muted mb-3">{{ book.description }}</p>
+
+          <div class="d-flex flex-wrap gap-2">
+            {% if book.mood %}
+              <span class="badge text-bg-light border">✨ {{ book.get_mood_display }}</span>
+            {% endif %}
+            {% if book.goal %}
+              <span class="badge text-bg-light border">🎯 {{ book.get_goal_display }}</span>
+            {% endif %}
+            {% if book.minutes_per_day %}
+              <span class="badge text-bg-light border">⏱️ {{ book.minutes_per_day }} min</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Update form -->
+    <div class="col-12 col-lg-7">
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+          <h5 class="fw-semibold mb-1">Your reading</h5>
+          <p class="text-muted mb-4">Track progress, rate it, and keep notes ✍️</p>
+
+          <form method="post" action="{% url 'update_userbook' book.id %}">
+            {% csrf_token %}
+
+            <div class="row g-3">
+
+              <!-- Status -->
+              <div class="col-12 col-md-6">
+                <label class="form-label text-muted">Status</label>
+                <select class="form-select" name="status">
+                  <option value="want" {% if userbook.status == "want" %}selected{% endif %}>Want to read</option>
+                  <option value="reading" {% if userbook.status == "reading" %}selected{% endif %}>Reading</option>
+                  <option value="finished" {% if userbook.status == "finished" %}selected{% endif %}>Finished</option>
+                </select>
+              </div>
+
+              <!-- Rating -->
+              <div class="col-12 col-md-6">
+                <label class="form-label text-muted">Rating (1–5)</label>
+                <input class="form-control" type="number" name="rating" min="1" max="5"
+                       value="{% if userbook.rating %}{{ userbook.rating }}{% endif %}"
+                       placeholder="e.g., 4" />
+              </div>
+
+              <!-- Progress -->
+              <div class="col-12">
+                <div class="d-flex justify-content-between">
+                  <label class="form-label text-muted mb-1">Progress</label>
+                  <div class="text-muted small">{% if userbook.progress %}{{ userbook.progress }}{% else %}0{% endif %}%</div>
+                </div>
+
+                <input class="form-range" type="range" name="progress" min="0" max="100"
+                       value="{% if userbook.progress %}{{ userbook.progress }}{% else %}0{% endif %}"
+                       oninput="document.getElementById('progressLabel').innerText = this.value + '%';" />
+                <div class="text-muted small">Slide to update</div>
+              </div>
+
+              <!-- Notes -->
+              <div class="col-12">
+                <label class="form-label text-muted">Notes</label>
+                <textarea class="form-control" name="notes" rows="6"
+                          placeholder="What stood out? Quotes? Actions?">{{ userbook.notes }}</textarea>
+              </div>
+
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 mt-4">
+              <button class="btn btn-primary rounded-pill" type="submit">💾 Save</button>
+
+              {% if userbook.status != "finished" %}
+                <button class="btn btn-outline-success rounded-pill" type="submit"
+                        name="status" value="finished">
+                  ✅ Mark finished
+                </button>
+              {% endif %}
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

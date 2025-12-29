@@ -7,6 +7,7 @@ import calendar
 from streaks.models import Streak
 from .models import Habit, HabitCheckIn
 
+from books.models import UserBook
 
 def dashboard(request):
     """
@@ -48,6 +49,13 @@ def dashboard(request):
             checkin.date.day for checkin in checkins
         }
 
+    # --------------------------------------------
+    # NEW: Fetch user's books for dashboard
+    # --------------------------------------------
+    user_books = UserBook.objects.filter(
+        user=request.user
+    ).select_related("book").order_by("-saved_at")[:3]
+
     # --------------------------------------------------
     # NEW: Weekly habit matrix (last 7 days)
     # --------------------------------------------------
@@ -76,6 +84,7 @@ def dashboard(request):
     context = {
         "habits": habits,
         "completed_today": completed_today,
+        "user_books": user_books,
 
         # Header information
         "today": today,

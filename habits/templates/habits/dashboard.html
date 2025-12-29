@@ -173,6 +173,40 @@
 
     </div>
 
+    <!-- ========================================================= -->
+<!-- 📚 Your Reading -->
+<!-- ========================================================= -->
+
+<div class="d-flex justify-content-between align-items-start">
+  <div>
+    <h5 class="fw-semibold mb-1">📚 Your Reading</h5>
+    <p class="text-muted small mb-0">Keep track of your saved books and progress.</p>
+  </div>
+  <a class="btn btn-outline-primary rounded-pill" href="{% url 'books_library' %}">Open Library</a>
+</div>
+
+<hr class="my-3">
+
+{% if user_books %}
+  <div class="d-grid gap-2">
+    {% for ub in user_books %}
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="fw-semibold">{{ ub.book.title }}</div>
+          <div class="small text-muted">{{ ub.progress }}% • {% if ub.status == "want" %}📌 Want{% elif ub.status == "reading" %}📖 Reading{% else %}✅ Done{% endif %}</div>
+        </div>
+        <a class="btn btn-sm btn-outline-secondary rounded-pill" href="{% url 'update_userbook' ub.book.id %}">Edit</a>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="text-muted">No books added yet.</div>
+  <div class="mt-2">
+    <a class="btn btn-sm btn-primary rounded-pill" href="{% url 'books' %}">Get a recommendation ✨</a>
+  </div>
+{% endif %}
+
+
     <!-- ======================================================
          Weekly habit overview (UX-optimized matrix)
          ====================================================== -->
