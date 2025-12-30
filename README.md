@@ -1,3 +1,16 @@
+# Streakly 🧠🔥
+
+Streakly is a habit-tracking web application built with Django.
+Users can track daily habits, maintain streaks, receive book recommendations,
+and use a Pomodoro timer to focus on habit-building sessions.
+
+## Key Features
+- Habit creation and daily check-ins
+- Weekly habit overview and streak logic
+- Personalized book recommendations
+- Personal reading library with notes and ratings
+- Pomodoro focus timer integrated into the dashboard
+
 ## Setup (for graders / professor)
 
 After cloning the repository, please run:
