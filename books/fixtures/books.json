@@ -1,0 +1,418 @@
+[
+{
+  "model": "books.book",
+  "pk": 1,
+  "fields": {
+    "title": "Atomic Habits",
+    "author": "James Clear",
+    "description": "A practical, evidence-based guide to building better habits and breaking bad ones through tiny changes that compound into remarkable results.",
+    "goal": "productivity",
+    "mood": "motivated",
+    "minutes_per_day": 10,
+    "tags": ""
+  }
+},
+{
+  "model": "books.book",
+  "pk": 2,
+  "fields": {
+    "title": "1984",
+    "author": "George Orwell",
+    "description": "A dystopian classic that explores surveillance, totalitarianism, and the power of language in a chilling future society.",
+    "goal": "sleep",
+    "mood": "curious",
+    "minutes_per_day": 20,
+    "tags": "Fiction"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 3,
+  "fields": {
+    "title": "The Night Circus",
+    "author": "Erin Morgenstern",
+    "description": "A magical, atmospheric fantasy about a mysterious competition between two illusionists set in a wandering, enchanting circus.",
+    "goal": "stress",
+    "mood": "tired",
+    "minutes_per_day": 15,
+    "tags": "Fiction"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 4,
+  "fields": {
+    "title": "Dune",
+    "author": "Frank Herbert",
+    "description": "Epic world-building on a desert planet with politics, prophecy, and ecological intrigue at the heart of an interstellar struggle.",
+    "goal": "sleep",
+    "mood": "curious",
+    "minutes_per_day": 15,
+    "tags": "Science Fiction"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 5,
+  "fields": {
+    "title": "Neuromancer",
+    "author": "William Gibson",
+    "description": "Cyberpunk foundational novel blending hacking, artificial intelligence, and dystopia in a high-tech noir narrative.",
+    "goal": "sleep",
+    "mood": "curious",
+    "minutes_per_day": 15,
+    "tags": "Science Fiction"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 6,
+  "fields": {
+    "title": "The Name of the Wind",
+    "author": "Patrick Rothfuss",
+    "description": "A lyrical coming-of-age tale of a gifted young magician recounting his journey from orphan to legend.",
+    "goal": "sleep",
+    "mood": "calm",
+    "minutes_per_day": 20,
+    "tags": "Fantasy"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 7,
+  "fields": {
+    "title": "The Priory of the Orange Tree",
+    "author": "Samantha Shannon",
+    "description": "A standalone epic fantasy with dragons, political intrigue, and matriarchal power structures.",
+    "goal": "sleep",
+    "mood": "calm",
+    "minutes_per_day": 15,
+    "tags": "Fantasy"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 8,
+  "fields": {
+    "title": "Gone Girl",
+    "author": "Gillian Flynn",
+    "description": "A gripping psychological thriller about a missing wife and the unraveling secrets of a marriage.",
+    "goal": "focus",
+    "mood": "calm",
+    "minutes_per_day": 20,
+    "tags": "Mystery / Thriller"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 9,
+  "fields": {
+    "title": "The Girl with the Dragon Tattoo",
+    "author": "Stieg Larsson",
+    "description": "Complex mystery pairing a journalist and a fierce hacker to solve a decades-old disappearance.",
+    "goal": "sleep",
+    "mood": "overwhelmed",
+    "minutes_per_day": 15,
+    "tags": "Mystery / Thriller"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 10,
+  "fields": {
+    "title": "The Book Thief",
+    "author": "Markus Zusak",
+    "description": "Set in Nazi Germany, a young girl finds solace in stealing books and sharing them as the world around her crumbles.",
+    "goal": "sleep",
+    "mood": "tired",
+    "minutes_per_day": 15,
+    "tags": "Historical Fiction"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 11,
+  "fields": {
+    "title": "All the Light We Cannot See",
+    "author": "Anthony Doerr",
+    "description": "Beautifully written story of a blind French girl and a German soldier whose paths converge during WWII.",
+    "goal": "sleep",
+    "mood": "tired",
+    "minutes_per_day": 15,
+    "tags": "Historical Fiction"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 12,
+  "fields": {
+    "title": "Educated",
+    "author": "Tara Westover",
+    "description": "A powerful memoir about a woman who escapes an isolated, fundamentalist upbringing to pursue education against all odds.",
+    "goal": "focus",
+    "mood": "curious",
+    "minutes_per_day": 15,
+    "tags": "Memoir"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 13,
+  "fields": {
+    "title": "Born a Crime",
+    "author": "Trevor Noah",
+    "description": "Humorous and moving reflections on the author’s childhood growing up mixed-race in apartheid South Africa.",
+    "goal": "focus",
+    "mood": "curious",
+    "minutes_per_day": 20,
+    "tags": "Memoir"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 14,
+  "fields": {
+    "title": "Sapiens: A Brief History of Humankind",
+    "author": "Yuval Noah Harari",
+    "description": "A sweeping overview of human history through anthropology, biology, and economic shifts.",
+    "goal": "focus",
+    "mood": "curious",
+    "minutes_per_day": 15,
+    "tags": "Science & Nature"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 15,
+  "fields": {
+    "title": "The Body: A Guide for Occupants",
+    "author": "Bill Bryson",
+    "description": "An entertaining and informative tour of the human body — how it works and why it’s amazing.",
+    "goal": "productivity",
+    "mood": "curious",
+    "minutes_per_day": 15,
+    "tags": "Science & Nature"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 16,
+  "fields": {
+    "title": "Mindset: The New Psychology of Success",
+    "author": "Carol S. Dweck",
+    "description": "Explores how a “growth mindset” transforms learning, resilience, and achievement.",
+    "goal": "mindset",
+    "mood": "motivated",
+    "minutes_per_day": 15,
+    "tags": "Self-Help"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 17,
+  "fields": {
+    "title": "The Power of Now",
+    "author": "Eckhart Tolle",
+    "description": "A spiritual guide about embracing the present moment to transcend anxiety and find peace.",
+    "goal": "mindset",
+    "mood": "overwhelmed",
+    "minutes_per_day": 15,
+    "tags": "Self-Help"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 18,
+  "fields": {
+    "title": "Good to Great",
+    "author": "Jim Collins",
+    "description": "Examines why some companies make the leap to sustained success and others don’t.",
+    "goal": "productivity",
+    "mood": "motivated",
+    "minutes_per_day": 15,
+    "tags": "Business"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 19,
+  "fields": {
+    "title": "Start With Why",
+    "author": "Simon Sinek",
+    "description": "A framework for inspiring leadership rooted in purpose: understanding why drives extraordinary success.",
+    "goal": "mindset",
+    "mood": "motivated",
+    "minutes_per_day": 15,
+    "tags": "Business"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 20,
+  "fields": {
+    "title": "The Sun and Her Flowers",
+    "author": "Rupi Kaur",
+    "description": "A modern poetry collection exploring growth, healing, ancestry, and love with raw emotional clarity.",
+    "goal": "stress",
+    "mood": "overwhelmed",
+    "minutes_per_day": 5,
+    "tags": "Poetry"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 21,
+  "fields": {
+    "title": "Can't Hurt Me",
+    "author": "David Goggins",
+    "description": "A brutal yet inspiring memoir about transforming pain into power through relentless discipline.",
+    "goal": "mindset",
+    "mood": "motivated",
+    "minutes_per_day": 10,
+    "tags": "Memoir"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 22,
+  "fields": {
+    "title": "Flow: The Psychology of Optimal Experience",
+    "author": "Mihaly Csikszentmihalyi",
+    "description": "Explores how to achieve deep focus and fulfillment by entering “flow,” a state of complete immersion.",
+    "goal": "stress",
+    "mood": "overwhelmed",
+    "minutes_per_day": 10,
+    "tags": "Self-Help"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 23,
+  "fields": {
+    "title": "Digital Minimalism",
+    "author": "Cal Newport",
+    "description": "A practical guide to reducing digital distraction so you can focus on what truly matters.",
+    "goal": "focus",
+    "mood": "overwhelmed",
+    "minutes_per_day": 15,
+    "tags": "Self-Help"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 24,
+  "fields": {
+    "title": "The Miracle Morning",
+    "author": "Hal Elrod",
+    "description": "A structured morning routine designed to reduce stress and increase clarity, energy, and productivity.",
+    "goal": "productivity",
+    "mood": "overwhelmed",
+    "minutes_per_day": 10,
+    "tags": "Self-Help"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 25,
+  "fields": {
+    "title": "The Subtle Art of Not Giving a F*ck",
+    "author": "Mark Manson",
+    "description": "A counterintuitive guide to prioritizing what actually matters and letting go of the rest.",
+    "goal": "stress",
+    "mood": "overwhelmed",
+    "minutes_per_day": 10,
+    "tags": "Self-Help"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 26,
+  "fields": {
+    "title": "The Anxiety and Phobia Workbook",
+    "author": "Edmund J. Bourne",
+    "description": "A practical self-help workbook with exercises to reduce anxiety and regain control (very helpful if overwhelmed).",
+    "goal": "stress",
+    "mood": "overwhelmed",
+    "minutes_per_day": 10,
+    "tags": "Self-Help"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 27,
+  "fields": {
+    "title": "The Upside of Stress",
+    "author": "Kelly McGonigal",
+    "description": "Reframes stress as something that can make you stronger rather than break you.",
+    "goal": "stress",
+    "mood": "overwhelmed",
+    "minutes_per_day": 10,
+    "tags": "Self-Help"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 28,
+  "fields": {
+    "title": "The Book of Joy",
+    "author": "Dalai Lama",
+    "description": "A heart-warming dialogue about finding joy and peace even amid suffering.",
+    "goal": "sleep",
+    "mood": "calm",
+    "minutes_per_day": 10,
+    "tags": "Memoir"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 29,
+  "fields": {
+    "title": "Braiding Sweetgrass",
+    "author": "Robin Wall Kimmerer",
+    "description": "Lyrical essays blending ecology and indigenous wisdom about gratitude, belonging, and connection to nature.",
+    "goal": "sleep",
+    "mood": "calm",
+    "minutes_per_day": 5,
+    "tags": "Poetry"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 30,
+  "fields": {
+    "title": "The 5 Second Rule",
+    "author": "Mel Robbins",
+    "description": "A simple tool to beat hesitation, push past fear, and take action — in 5 seconds.",
+    "goal": "mindset",
+    "mood": "motivated",
+    "minutes_per_day": 10,
+    "tags": "Self-Help"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 31,
+  "fields": {
+    "title": "Letters to a Young Poet",
+    "author": "Rainer Maria Rilke",
+    "description": "Timeless meditations on creativity, solitude, and self-belief.",
+    "goal": "sleep",
+    "mood": "calm",
+    "minutes_per_day": 5,
+    "tags": "Poetry"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 32,
+  "fields": {
+    "title": "Tiny Beautiful Things",
+    "author": "Cheryl Strayed",
+    "description": "Compassionate real-life advice that’s grounding and unexpectedly uplifting.",
+    "goal": "sleep",
+    "mood": "calm",
+    "minutes_per_day": 5,
+    "tags": "Self-Help"
+  }
+}
+]
