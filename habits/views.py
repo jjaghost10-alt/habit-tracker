@@ -8,8 +8,8 @@ from streaks.models import Streak
 from .models import Habit, HabitCheckIn
 
 from books.models import UserBook
-
 from pomodoro.models import PomodoroSession
+
 
 def dashboard(request):
     """
@@ -28,12 +28,15 @@ def dashboard(request):
     # Today's date
     today = date.today()
 
-    # Pomodoro Timer
-    active_pomodoro = PomodoroSession.objects.filter(
-        user=request.user,
-        status="running"
-    ).order_by("-started_at").first()
-
+    # --------------------------------------------------
+    # Pomodoro Timer (FIXED: no crash without login)
+    # --------------------------------------------------
+    active_pomodoro = None
+    if request.user.is_authenticated:
+        active_pomodoro = PomodoroSession.objects.filter(
+            user=request.user,
+            status="running"
+        ).order_by("-started_at").first()
 
     # IDs of habits completed today
     completed_today = {
@@ -41,8 +44,7 @@ def dashboard(request):
         for checkin in HabitCheckIn.objects.filter(date=today)
     }
 
-    # (Optional) Calendar logic – currently not used in UI,
-    # but kept for future extensions
+    # (Optional) Calendar logic – currently not used in UI
     year = today.year
     month = today.month
     days_in_month = calendar.monthrange(year, month)[1]
@@ -58,37 +60,34 @@ def dashboard(request):
             checkin.date.day for checkin in checkins
         }
 
-    # --------------------------------------------
-    # NEW: Fetch user's books for dashboard
-    # --------------------------------------------
-    user_books = UserBook.objects.filter(
-        user=request.user
-    ).select_related("book").order_by("-saved_at")[:3]
+    # --------------------------------------------------
+    # User books (FIXED: no crash without login)
+    # --------------------------------------------------
+    user_books = []
+    if request.user.is_authenticated:
+        user_books = UserBook.objects.filter(
+            user=request.user
+        ).select_related("book").order_by("-saved_at")[:3]
 
     # --------------------------------------------------
-    # NEW: Weekly habit matrix (last 7 days)
+    # Weekly habit matrix (UNCHANGED)
     # --------------------------------------------------
-    # Generates a list of the last 7 days (chronological order)
-    # Used for the checkbox matrix in the dashboard UI
     week_days = [
         today - timedelta(days=i)
         for i in range(6, -1, -1)
     ]
 
-    # Fetch all check-ins for the displayed week
     weekly_checkins = HabitCheckIn.objects.filter(
         date__in=week_days
     )
 
-    # Map (habit_id, date) -> True
-    # Enables O(1) lookup in the template
     weekly_checkin_map = {
         (checkin.habit_id, checkin.date): True
         for checkin in weekly_checkins
     }
 
     # --------------------------------------------------
-    # Context passed to the template
+    # Context
     # --------------------------------------------------
     context = {
         "habits": habits,
@@ -100,11 +99,11 @@ def dashboard(request):
         "today": today,
         "weekday": calendar.day_name[today.weekday()],
 
-        # Calendar data (currently unused in dashboard.html)
+        # Calendar data
         "days_in_month": range(1, days_in_month + 1),
         "habit_calendar": habit_calendar,
 
-        # Weekly matrix data (NEW)
+        # Weekly matrix data
         "week_days": week_days,
         "weekly_checkin_map": weekly_checkin_map,
     }
@@ -119,8 +118,6 @@ def dashboard(request):
 def toggle_habit(request, habit_id):
     """
     Toggles today's completion state of a habit.
-    - If already completed today → undo
-    - If not completed → create check-in and update streak
     """
 
     habit = get_object_or_404(Habit, id=habit_id)
@@ -132,13 +129,9 @@ def toggle_habit(request, habit_id):
     ).first()
 
     if checkin:
-        # Habit was already completed today → undo check-in
         checkin.delete()
     else:
-        # Create today's check-in
         HabitCheckIn.objects.create(habit=habit, date=today)
-
-        # Update streak (create if it does not exist yet)
         streak, _ = Streak.objects.get_or_create(habit=habit)
         streak.update_streak()
 
@@ -161,8 +154,7 @@ def add_habit(request):
 @require_POST
 def delete_habit(request, habit_id):
     """
-    Deletes a habit and all related data
-    (check-ins and streak via cascade).
+    Deletes a habit and all related data.
     """
 
     habit = get_object_or_404(Habit, id=habit_id)
