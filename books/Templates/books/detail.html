@@ -1,9 +1,22 @@
 {% extends "habits/base.html" %}
 {% block content %}
 
+<!--
+  Book detail page
+
+  This page shows detailed information about a single book
+  and allows the user to manage their personal reading state:
+  - status (want / reading / finished)
+  - progress percentage
+  - rating
+  - personal notes
+-->
+
 <div class="container py-4">
 
-  <!-- Header -->
+    <!-- ======================================================
+       Page header: book title and navigation links
+       ====================================================== -->
   <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
     <div>
       <div class="text-muted small mb-1">📖 Book</div>
@@ -11,6 +24,7 @@
       <div class="text-muted">{{ book.author }}</div>
     </div>
 
+    <!-- Navigation buttons -->
     <div class="d-flex gap-2">
       <a class="btn btn-outline-secondary rounded-pill" href="{% url 'books_library' %}">
         📚 My library
@@ -23,13 +37,18 @@
 
   <div class="row g-4">
 
-    <!-- Left: Book summary -->
+    <!-- ======================================================
+         Left column: Book summary and metadata
+         ====================================================== -->
     <div class="col-12 col-lg-5">
       <div class="card shadow-sm border-0 rounded-4">
         <div class="card-body">
+
+          <!-- Book description -->
           <h5 class="fw-semibold mb-2">About</h5>
           <p class="text-muted mb-3">{{ book.description }}</p>
-
+          
+          <!-- Book attributes used for recommendations -->
           <div class="d-flex flex-wrap gap-2">
             {% if book.mood %}
               <span class="badge text-bg-light border">✨ {{ book.get_mood_display }}</span>
@@ -45,19 +64,28 @@
       </div>
     </div>
 
-    <!-- Right: Update form -->
+    <!-- ======================================================
+         Right column: User interaction & reading progress
+         ====================================================== -->
     <div class="col-12 col-lg-7">
       <div class="card shadow-sm border-0 rounded-4">
         <div class="card-body">
           <h5 class="fw-semibold mb-1">Your reading</h5>
           <p class="text-muted mb-4">Track progress, rate it, and keep notes ✍️</p>
 
+          <!--
+            Form to update the UserBook model:
+            - reading status
+            - rating
+            - progress percentage
+            - personal notes
+          -->
           <form method="post" action="{% url 'update_userbook' book.id %}">
             {% csrf_token %}
 
             <div class="row g-3">
 
-              <!-- Status -->
+              <!-- Reading status -->
               <div class="col-12 col-md-6">
                 <label class="form-label text-muted">Status</label>
                 <select class="form-select" name="status">
@@ -67,7 +95,7 @@
                 </select>
               </div>
 
-              <!-- Rating -->
+              <!-- User rating -->
               <div class="col-12 col-md-6">
                 <label class="form-label text-muted">Rating (1–5)</label>
                 <input class="form-control" type="number" name="rating" min="1" max="5"
@@ -75,20 +103,21 @@
                        placeholder="e.g., 4" />
               </div>
 
-              <!-- Progress -->
+              <!-- Reading rogress slider -->
               <div class="col-12">
                 <div class="d-flex justify-content-between">
                   <label class="form-label text-muted mb-1">Progress</label>
                   <div class="text-muted small">{% if userbook.progress %}{{ userbook.progress }}{% else %}0{% endif %}%</div>
                 </div>
 
+                <!-- Range slider to update progress percentage -->
                 <input class="form-range" type="range" name="progress" min="0" max="100"
                        value="{% if userbook.progress %}{{ userbook.progress }}{% else %}0{% endif %}"
                        oninput="document.getElementById('progressLabel').innerText = this.value + '%';" />
                 <div class="text-muted small">Slide to update</div>
               </div>
 
-              <!-- Notes -->
+              <!-- Personal notes -->
               <div class="col-12">
                 <label class="form-label text-muted">Notes</label>
                 <textarea class="form-control" name="notes" rows="6"
@@ -97,9 +126,11 @@
 
             </div>
 
+            <!-- Action buttons -->
             <div class="d-flex flex-wrap gap-2 mt-4">
               <button class="btn btn-primary rounded-pill" type="submit">💾 Save</button>
 
+              <!-- Quick action to mark a book as finished -->
               {% if userbook.status != "finished" %}
                 <button class="btn btn-outline-success rounded-pill" type="submit"
                         name="status" value="finished">

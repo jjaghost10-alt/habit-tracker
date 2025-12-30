@@ -1,9 +1,25 @@
 {% extends "habits/base.html" %}
 {% block content %}
 
+<!--
+  Book recommendation page
+
+  This template lets the user filter the global book catalogue by:
+  - mood
+  - goal
+  - available minutes per reading session
+
+  The backend (views.py) uses these filters to:
+  - pick a "Top Pick" recommendation
+  - show additional matching results
+  Users can open a book detail page or save a book into their personal library.
+-->
+
 <div class="container py-4">
 
-  <!-- Page header -->
+    <!-- ======================================================
+       Page header: title and short explanation
+       ====================================================== -->
   <div class="mb-4">
     <h1 class="fw-bold mb-1">📚 Book Recommendations</h1>
     <p class="text-muted mb-0">
@@ -11,20 +27,29 @@
     </p>
   </div>
 
-  <!-- Filter / Recommend form -->
+  <!-- ======================================================
+       Filter form (GET request)
+       ======================================================
+       We use GET so the filters appear in the URL as query parameters
+       (useful for sharing links and keeping state when refreshing).
+  -->
   <div class="card shadow-sm border-0 rounded-4 mb-4">
     <div class="card-body">
       <form method="get" class="row g-3 align-items-end">
+
+        <!-- Mood dropdown (values come from Book.MOODS via the view) -->
         <div class="col-12 col-md-3">
           <label class="form-label text-muted">Mood ✨</label>
           <select name="mood" class="form-select">
             <option value="">Any</option>
             {% for value, label in moods %}
+            <!-- Keep the selected option when the user filters -->
               <option value="{{ value }}" {% if request.GET.mood == value %}selected{% endif %}>{{ label }}</option>
             {% endfor %}
           </select>
         </div>
 
+        <!-- Goal dropdown (values come from Book.GOALS via the view) -->
         <div class="col-12 col-md-3">
           <label class="form-label text-muted">Goal 🎯</label>
           <select name="goal" class="form-select">
@@ -35,6 +60,7 @@
           </select>
         </div>
 
+        <!-- Minutes input: user enters their time budget -->
         <div class="col-12 col-md-3">
           <label class="form-label text-muted">Minutes / session ⏱️</label>
           <input
@@ -48,8 +74,10 @@
           <div class="form-text">We’ll match your time budget.</div>
         </div>
 
+        <!-- Submit and reset actions -->
         <div class="col-12 col-md-3 d-flex gap-2">
           <button class="btn btn-primary rounded-pill w-100" type="submit">Recommend ✨</button>
+          <!-- Reset returns the user to the same page without filters -->
           <a class="btn btn-outline-secondary rounded-pill w-100" href="{% url 'books' %}">Reset</a>
         </div>
       </form>
@@ -57,7 +85,13 @@
   </div>
 
   {% if recommended %}
-  <!-- Top Pick -->
+
+<!-- ======================================================
+         Top pick section (recommended book)
+         ======================================================
+         The view selects the first matching book as the "Top Pick".
+         This makes the UX feel like a personalized recommendation.
+    -->
   <div class="card shadow-sm border-0 rounded-4 mb-4">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-start gap-3">
@@ -66,19 +100,24 @@
           <h3 class="fw-bold mb-1">{{ recommended.title }}</h3>
           <div class="text-muted mb-3">{{ recommended.author }}</div>
         </div>
+
+        <!-- Optional minutes badge for time-based recommendations -->
         {% if recommended.minutes_per_day %}
           <span class="badge text-bg-light border">⏱️ {{ recommended.minutes_per_day }} min</span>
         {% endif %}
       </div>
 
+      <!-- Short book description -->
       <p class="mb-3">{{ recommended.description }}</p>
 
+      <!-- Actions: open details or save to personal library -->
       <div class="d-flex flex-wrap gap-2">
         <a class="btn btn-outline-primary rounded-pill"
            href="{% url 'book_detail' recommended.id %}">
           Open 📖
         </a>
 
+        <!-- POST form is used to save because it modifies data (creates UserBook) -->
         <form method="post"
               action="{% url 'add_to_library' recommended.id %}"
               class="d-inline">
@@ -94,28 +133,37 @@
 {% endif %}
 
 {% if results %}
-  <!-- More matches -->
+  <!-- ======================================================
+         More matches section
+         ======================================================
+         Shows additional filtered results under the top pick.
+    -->
   <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 class="fw-semibold mb-0">More matches 💡</h5>
     <div class="text-muted small">{{ results|length }} found</div>
   </div>
 
   <div class="row g-3">
+    <!-- One result card per matching book -->
     {% for book in results %}
       <div class="col-12 col-lg-6">
         <div class="card shadow-sm border-0 rounded-4 h-100">
           <div class="card-body d-flex flex-column">
+            <!-- Book metadata -->
             <h5 class="fw-bold mb-1">{{ book.title }}</h5>
             <div class="text-muted mb-2">{{ book.author }}</div>
 
+            <!-- Short description -->
             <p class="text-muted mb-3">{{ book.description }}</p>
 
+            <!-- Card actions pinned to bottom (mt-auto) -->
             <div class="mt-auto d-flex flex-wrap gap-2">
               <a class="btn btn-outline-primary rounded-pill"
                  href="{% url 'book_detail' book.id %}">
                 Open 📖
               </a>
 
+              <!-- POST form to save book to library (creates/updates UserBook entry) -->
               <form method="post"
                     action="{% url 'add_to_library' book.id %}"
                     class="d-inline">
@@ -133,6 +181,7 @@
   </div>
 
 {% else %}
+  <!-- Empty state: filters were used, but no results matched -->
   {% if request.GET.mood or request.GET.goal or request.GET.minutes %}
     <div class="text-muted">No matches found — try relaxing your filters 🙂</div>
   {% endif %}

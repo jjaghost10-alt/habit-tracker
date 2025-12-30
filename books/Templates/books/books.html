@@ -1,16 +1,39 @@
+<!--
+  Books list template
+
+  This page displays all available books in the global book catalogue.
+  Each book shows its title, optional author, and a short description.
+-->
+
 <h1>Books</h1>
 
 {% if books %}
+  <!--
+    If at least one book exists in the database,
+    render them as a simple unordered list.
+  -->
   <ul>
     {% for b in books %}
+      <!-- Individual book entry -->
       <li>
+        <!-- Book title -->
         <strong>{{ b.title }}</strong>
+
+        <!-- Display the author only if it exists -->
         {% if b.author %} — {{ b.author }}{% endif %}
         <br>
+
+        <!-- Short book description -->
         <small>{{ b.description }}</small>
       </li>
     {% endfor %}
   </ul>
 {% else %}
+
+  <!--
+    Fallback message shown when no books exist yet.
+    This typically happens before books are added
+    via the Django admin interface or fixtures.
+  -->
   <p>No books yet. Add some in /admin.</p>
 {% endif %}
