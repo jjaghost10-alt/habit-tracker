@@ -1,11 +1,12 @@
 from django.db import models
 from datetime import date
-from django.utils.timezone import now
+from django.utils import timezone
+from django.conf import settings
 
 
 class Habit(models.Model):
     name = models.CharField(max_length=100)
-    created_at = models.DateTimeField(default=now)
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.name
@@ -18,3 +19,4 @@ class HabitCheckIn(models.Model):
 
     class Meta:
         unique_together = ("habit", "date")
+

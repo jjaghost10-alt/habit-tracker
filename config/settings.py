@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'streaks',   # neu hinzugefügt von David
     'todos',     # neu hinzugefügt von David
     'books',     # neu hinzugefügt von Iri
+    'pomodoro',  # neu hinzugefügt von Iri
 ]
 
 MIDDLEWARE = [
