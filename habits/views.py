@@ -9,6 +9,8 @@ from .models import Habit, HabitCheckIn
 
 from books.models import UserBook
 
+from pomodoro.models import PomodoroSession
+
 def dashboard(request):
     """
     Main dashboard view.
@@ -25,6 +27,13 @@ def dashboard(request):
 
     # Today's date
     today = date.today()
+
+    # Pomodoro Timer
+    active_pomodoro = PomodoroSession.objects.filter(
+        user=request.user,
+        status="running"
+    ).order_by("-started_at").first()
+
 
     # IDs of habits completed today
     completed_today = {
@@ -85,6 +94,7 @@ def dashboard(request):
         "habits": habits,
         "completed_today": completed_today,
         "user_books": user_books,
+        "active_pomodoro": active_pomodoro,
 
         # Header information
         "today": today,

@@ -5,6 +5,8 @@
 
 {% block content %}
 
+{% load timefmt %}
+
 <div class="container mt-4">
 
     <!-- ======================================================
@@ -24,6 +26,52 @@
             </p>
         </div>
     </div>
+
+    <!-- ======================================================
+     Pomodoro timer
+     ====================================================== -->
+<div class="card shadow-sm border-0 rounded-4 mb-4">
+  <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
+
+    <div>
+      <h5 class="fw-semibold mb-1">⏱️ Pomodoro</h5>
+      <p class="text-muted mb-0">
+        Start a focus sprint — then come back and tick off habits.
+      </p>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+      <span class="badge text-bg-light border" id="pomodoro-status">
+        {% if active_pomodoro %}Running{% else %}Ready{% endif %}
+      </span>
+
+     <span
+       class="badge text-bg-light border fs-6"
+       id="pomodoro-time"
+       data-seconds="{% if active_pomodoro %}
+                        {{ active_pomodoro.remaining_seconds }}
+                      {% else %}
+                        1500
+                      {% endif %}"
+ >
+       {% if active_pomodoro %}
+         {{ active_pomodoro.remaining_seconds|mmss }}
+       {% else %}
+         {{ 1500|mmss }}
+       {% endif %}
+    </span>
+
+
+      <button class="btn btn-primary rounded-pill" type="button" id="pomodoro-start">
+        ▶️ Start 25
+      </button>
+      <button class="btn btn-outline-secondary rounded-pill" type="button" id="pomodoro-reset">
+        🔄 Reset
+      </button>
+    </div>
+
+  </div>
+</div>
 
     <!-- ======================================================
          Page header
@@ -279,5 +327,99 @@
     </div>
 
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+  const startBtn = document.getElementById("pomodoro-start");
+  const resetBtn = document.getElementById("pomodoro-reset");
+  const timeEl = document.getElementById("pomodoro-time");
+  const statusEl = document.getElementById("pomodoro-status");
+
+  // 🔎 If any element is missing, print a helpful message and stop
+  if (!startBtn || !resetBtn || !timeEl || !statusEl) {
+    console.warn("Pomodoro elements not found:", { startBtn, resetBtn, timeEl, statusEl });
+    return;
+  }
+
+  let timer = null;
+
+  function render(seconds) {
+    seconds = Math.max(0, seconds);
+    const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+    const s = String(seconds % 60).padStart(2, "0");
+    timeEl.textContent = `${m}:${s}`;
+    timeEl.dataset.seconds = seconds;
+  }
+
+  function startCountdown() {
+    if (timer) clearInterval(timer);
+    timer = setInterval(() => {
+      let secs = parseInt(timeEl.dataset.seconds || "0", 10);
+      secs -= 1;
+      render(secs);
+      if (secs <= 0) {
+        clearInterval(timer);
+        timer = null;
+        statusEl.textContent = "Finished ✅";
+      }
+    }, 1000);
+  }
+
+  // initial render from server (reads your data-seconds attribute)
+  render(parseInt(timeEl.dataset.seconds || "1500", 10));
+
+  startBtn.addEventListener("click", async () => {
+    try {
+      const res = await fetch("{% url 'pomodoro_start' %}", {
+        method: "POST",
+        headers: { "X-CSRFToken": getCookie("csrftoken") },
+      });
+
+      if (!res.ok) {
+        const txt = await res.text();
+        console.error("Start failed:", res.status, txt);
+        return;
+      }
+
+      const data = await res.json();
+      statusEl.textContent = "Running";
+      render(data.seconds);
+      startCountdown();
+    } catch (err) {
+      console.error("Start error:", err);
+    }
+  });
+
+  resetBtn.addEventListener("click", async () => {
+    try {
+      const res = await fetch("{% url 'pomodoro_reset' %}", {
+        method: "POST",
+        headers: { "X-CSRFToken": getCookie("csrftoken") },
+      });
+
+      if (!res.ok) {
+        const txt = await res.text();
+        console.error("Reset failed:", res.status, txt);
+        return;
+      }
+
+      const data = await res.json();
+      statusEl.textContent = "Ready";
+      render(data.seconds);
+      if (timer) clearInterval(timer);
+      timer = null;
+    } catch (err) {
+      console.error("Reset error:", err);
+    }
+  });
+});
+</script>
+
 
 {% endblock %}
