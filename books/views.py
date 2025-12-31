@@ -1,9 +1,9 @@
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
+
 from .models import Book, UserBook
 
-@login_required
+
 def recommend(request):
     """
     Book recommendation page.
@@ -50,13 +50,18 @@ def recommend(request):
             queryset = queryset.filter(
                 minutes_per_day__gte=max(0, m - 10),
                 minutes_per_day__lte=m + 10
-)
+            )
         except ValueError:
             # If user enters something non-numeric, ignore time filtering
             pass
 
     # Exclude books the user already marked finished (nice UX)
-    finished_ids = UserBook.objects.filter(user=request.user, status="finished").values_list("book_id", flat=True)
+    finished_ids = []
+    if request.user.is_authenticated:
+        finished_ids = UserBook.objects.filter(
+            user=request.user,
+            status="finished"
+        ).values_list("book_id", flat=True)
     queryset = queryset.exclude(id__in=finished_ids)
 
     # Limit results to keep the UI fast and uncluttered
@@ -65,7 +70,12 @@ def recommend(request):
         recommended = results[0]
 
     # Precompute the user's saved books so the template can show "Saved" state
-    saved_ids = set(UserBook.objects.filter(user=request.user).values_list("book_id", flat=True))
+    saved_ids = set()
+    if request.user.is_authenticated:
+        saved_ids = set(
+            UserBook.objects.filter(user=request.user)
+            .values_list("book_id", flat=True)
+        )
 
     # Render the recommendation template
     return render(request, "books/recommend.html", {
@@ -74,12 +84,11 @@ def recommend(request):
         "recommended": recommended,
         "results": results,
         "saved_ids": saved_ids,
-         # Helpful for keeping the form state (optional, since we also use request.GET)
+        # Helpful for keeping the form state (optional, since we also use request.GET)
         "selected": {"mood": mood, "goal": goal, "minutes": minutes},
     })
 
 
-@login_required
 def add_to_library(request, book_id):
     """
     Action view: adds a book to the current user's library.
@@ -87,6 +96,9 @@ def add_to_library(request, book_id):
     Uses get_or_create() to prevent duplicate saved books.
     After saving, redirects the user to the library page.
     """
+    if not request.user.is_authenticated:
+        return redirect("recommend")
+
     # Fetch the book or return 404 if the ID doesn't exist
     book = get_object_or_404(Book, id=book_id)
     # Create the UserBook relationship if it doesn't exist yet
@@ -95,7 +107,6 @@ def add_to_library(request, book_id):
     return redirect("books_library")
 
 
-@login_required
 def library(request):
     """
     Library page.
@@ -107,16 +118,19 @@ def library(request):
     Uses select_related('book') to avoid extra database queries
     when accessing ub.book.title, ub.book.author, etc. in templates.
     """
-    user_books = (
-        UserBook.objects
-        .filter(user=request.user)
-        .select_related("book") # performance optimization (joins Book in one query)
-        .order_by("-saved_at") # most recently saved books first
-    )
+    user_books = []
+
+    if request.user.is_authenticated:
+        user_books = (
+            UserBook.objects
+            .filter(user=request.user)
+            .select_related("book")  # performance optimization (joins Book in one query)
+            .order_by("-saved_at")   # most recently saved books first
+        )
+
     return render(request, "books/library.html", {"user_books": user_books})
 
 
-@login_required
 def book_detail(request, book_id):
     """
     Book detail page.
@@ -125,13 +139,15 @@ def book_detail(request, book_id):
     Ensures a UserBook row exists so the user can immediately start tracking
     progress / notes / rating.
     """
+    if not request.user.is_authenticated:
+        return redirect("recommend")
+
     book = get_object_or_404(Book, id=book_id)
     # Ensure the user has a UserBook entry for this book
     userbook, _ = UserBook.objects.get_or_create(user=request.user, book=book)
     return render(request, "books/detail.html", {"book": book, "userbook": userbook})
 
 
-@login_required
 def update_userbook(request, book_id):
     """
     Action view: updates user-specific book data.
@@ -144,6 +160,9 @@ def update_userbook(request, book_id):
 
     Redirects back to the book detail page after saving.
     """
+    if not request.user.is_authenticated:
+        return redirect("recommend")
+
     book = get_object_or_404(Book, id=book_id)
     # Ensure a UserBook object exists before updating
     userbook, _ = UserBook.objects.get_or_create(user=request.user, book=book)
@@ -176,5 +195,6 @@ def update_userbook(request, book_id):
         userbook.notes = notes
         # Save updated user-specific book state
         userbook.save()
+
     # Redirect to the detail page (PRG pattern)
     return redirect("book_detail", book_id=book.id)
