@@ -63,12 +63,11 @@ def dashboard(request):
     # --------------------------------------------------
     # User books (FIXED: no crash without login)
     # --------------------------------------------------
-    user_books = []
-    if request.user.is_authenticated:
-        user_books = UserBook.objects.filter(
-            user=request.user
-        ).select_related("book").order_by("-saved_at")[:3]
-
+    user_books = (
+        UserBook.objects
+        .select_related("book")
+        .order_by("-saved_at")[:3]
+    )
     # --------------------------------------------------
     # Weekly habit matrix (UNCHANGED)
     # --------------------------------------------------
