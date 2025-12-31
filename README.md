@@ -11,6 +11,14 @@ and use a Pomodoro timer to focus on habit-building sessions.
 - Personal reading library with notes and ratings
 - Pomodoro focus timer integrated into the dashboard
 
+## Demo Access
+The app includes a demo user to allow full access without authentication.
+
+## Authors
+- Iris Kosmerlj
+- Jan Allenspach
+- David Xue
+
 ## Setup (for graders / professor)
 
 After cloning the repository, please run:
