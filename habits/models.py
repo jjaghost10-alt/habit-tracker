@@ -19,4 +19,3 @@ class HabitCheckIn(models.Model):
 
     class Meta:
         unique_together = ("habit", "date")
-

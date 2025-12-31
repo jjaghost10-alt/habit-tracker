@@ -1,4 +1,4 @@
-# selber erstellt
+# Custom URL configuration for the habits app
 from django.urls import path
 from . import views
 

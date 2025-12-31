@@ -14,12 +14,17 @@ from pomodoro.models import PomodoroSession
 def dashboard(request):
     """
     Main dashboard view.
-    Splits habits into 'open' and 'completed today' based on check-ins.
-    Also provides today's date and weekday for the UI header.
+
+    Renders the central dashboard page of the application.
+    Combines multiple features into a single overview:
+    - habit tracking (open vs. completed today)
+    - active pomodoro session
+    - reading progress preview
+    - weekly habit consistency matrix
     """
 
     # --------------------------------------------------
-    # Existing logic
+    # Habit data
     # --------------------------------------------------
 
     # Fetch all habits
@@ -29,26 +34,39 @@ def dashboard(request):
     today = date.today()
 
     # --------------------------------------------------
-    # Pomodoro Timer
+    # Pomodoro timer
     # --------------------------------------------------
+
+    # Retrieve the currently running pomodoro session (if any)
     active_pomodoro = None
     if request.user.is_authenticated:
-        active_pomodoro = PomodoroSession.objects.filter(
-            user=request.user,
-            status="running"
-        ).order_by("-started_at").first()
+        active_pomodoro = (
+            PomodoroSession.objects
+            .filter(user=request.user, status="running")
+            .order_by("-started_at")
+            .first()
+        )
 
-    # IDs of habits completed today
+    # --------------------------------------------------
+    # Habits completed today
+    # --------------------------------------------------
+
+    # Collect IDs of habits that were completed today
     completed_today = {
         checkin.habit_id
         for checkin in HabitCheckIn.objects.filter(date=today)
     }
 
-    # Calendar logic – currently not used in UI
+    # --------------------------------------------------
+    # Monthly calendar data (currently not rendered in UI)
+    # --------------------------------------------------
+
+    # Determine current month and number of days
     year = today.year
     month = today.month
     days_in_month = calendar.monthrange(year, month)[1]
 
+    # Build a mapping: habit_id -> set of completed days in the month
     habit_calendar = {}
     for habit in habits:
         checkins = HabitCheckIn.objects.filter(
@@ -61,38 +79,52 @@ def dashboard(request):
         }
 
     # --------------------------------------------------
-    # User books
+    # Reading overview (books)
     # --------------------------------------------------
+
+    # Fetch the three most recently saved books
     user_books = (
         UserBook.objects
         .select_related("book")
         .order_by("-saved_at")[:3]
     )
+
     # --------------------------------------------------
     # Weekly habit matrix
     # --------------------------------------------------
+
+    # Generate a list of the last 7 days (including today)
     week_days = [
         today - timedelta(days=i)
         for i in range(6, -1, -1)
     ]
 
+    # Fetch all check-ins for the selected week
     weekly_checkins = HabitCheckIn.objects.filter(
         date__in=week_days
     )
 
+    # Create a lookup dictionary for fast template access
+    # Key: (habit_id, date) -> True
     weekly_checkin_map = {
         (checkin.habit_id, checkin.date): True
         for checkin in weekly_checkins
     }
 
     # --------------------------------------------------
-    # Context
+    # Template context
     # --------------------------------------------------
+
     context = {
+        # Habit data
         "habits": habits,
         "completed_today": completed_today,
-        "user_books": user_books,
+
+        # Pomodoro data
         "active_pomodoro": active_pomodoro,
+
+        # Reading preview
+        "user_books": user_books,
 
         # Header information
         "today": today,
@@ -116,21 +148,30 @@ def dashboard(request):
 
 def toggle_habit(request, habit_id):
     """
-    Toggles today's completion state of a habit.
+    Action view: toggle today's completion state of a habit.
+
+    If a check-in for today already exists, it is removed.
+    Otherwise, a new check-in is created and the habit's
+    streak is updated accordingly.
     """
 
     habit = get_object_or_404(Habit, id=habit_id)
     today = date.today()
 
+    # Check whether the habit was already completed today
     checkin = HabitCheckIn.objects.filter(
         habit=habit,
         date=today,
     ).first()
 
     if checkin:
+        # Undo completion for today
         checkin.delete()
     else:
+        # Mark habit as completed today
         HabitCheckIn.objects.create(habit=habit, date=today)
+
+        # Ensure streak exists and update it
         streak, _ = Streak.objects.get_or_create(habit=habit)
         streak.update_streak()
 
@@ -140,7 +181,10 @@ def toggle_habit(request, habit_id):
 @require_POST
 def add_habit(request):
     """
-    Creates a new habit from the dashboard modal.
+    Action view: create a new habit.
+
+    Reads the habit name from POST data and creates
+    a new Habit object. Redirects back to the dashboard.
     """
 
     name = request.POST.get("name")
@@ -153,7 +197,10 @@ def add_habit(request):
 @require_POST
 def delete_habit(request, habit_id):
     """
-    Deletes a habit and all related data.
+    Action view: delete a habit.
+
+    Removes the habit and all related data such as
+    check-ins and streaks. Redirects back to the dashboard.
     """
 
     habit = get_object_or_404(Habit, id=habit_id)
