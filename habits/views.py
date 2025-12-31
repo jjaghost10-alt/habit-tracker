@@ -19,7 +19,7 @@ def dashboard(request):
     """
 
     # --------------------------------------------------
-    # Existing logic (UNCHANGED)
+    # Existing logic
     # --------------------------------------------------
 
     # Fetch all habits
@@ -29,7 +29,7 @@ def dashboard(request):
     today = date.today()
 
     # --------------------------------------------------
-    # Pomodoro Timer (FIXED: no crash without login)
+    # Pomodoro Timer
     # --------------------------------------------------
     active_pomodoro = None
     if request.user.is_authenticated:
@@ -44,7 +44,7 @@ def dashboard(request):
         for checkin in HabitCheckIn.objects.filter(date=today)
     }
 
-    # (Optional) Calendar logic – currently not used in UI
+    # Calendar logic – currently not used in UI
     year = today.year
     month = today.month
     days_in_month = calendar.monthrange(year, month)[1]
@@ -61,7 +61,7 @@ def dashboard(request):
         }
 
     # --------------------------------------------------
-    # User books (FIXED: no crash without login)
+    # User books
     # --------------------------------------------------
     user_books = (
         UserBook.objects
@@ -69,7 +69,7 @@ def dashboard(request):
         .order_by("-saved_at")[:3]
     )
     # --------------------------------------------------
-    # Weekly habit matrix (UNCHANGED)
+    # Weekly habit matrix
     # --------------------------------------------------
     week_days = [
         today - timedelta(days=i)
